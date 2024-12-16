@@ -1,0 +1,22 @@
+import ccxt
+import talib
+
+# إعداد الاتصال بالبورصات
+exchange = ccxt.binance()  # يمكنك تغيير البورصة حسب الحاجة
+
+# تحميل البيانات
+data = exchange.fetch_ohlcv('BTC/USDT', timeframe='1h')
+
+# تحويل البيانات إلى مصفوفة
+close_prices = [x[4] for x in data]
+
+# حساب المؤشرات
+sma = talib.SMA(close_prices, timeperiod=14)
+rsi = talib.RSI(close_prices, timeperiod=14)
+macd, macdsignal, macdhist = talib.MACD(close_prices)
+
+# منطق التداول
+if rsi[-1] < 30 and close_prices[-1] > sma[-1]:
+    print("إشارة شراء")
+elif rsi[-1] > 70 and close_prices[-1] < sma[-1]:
+    print("إشارة بيع")
